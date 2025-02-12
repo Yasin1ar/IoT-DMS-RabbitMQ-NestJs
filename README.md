@@ -1,15 +1,15 @@
 # IoT X-ray Data Management System
 
-## 📌 Overview
+## Overview
 This is a NestJS-based API that processes x-ray data from IoT devices using RabbitMQ and MongoDB.
 
-## 🚀 Features
+## Features
 - **RabbitMQ Integration** for processing real-time x-ray signals.
 - **MongoDB Storage** with Mongoose.
 - **RESTful API** with Swagger Documentation.
 - **IoT Simulator** that generates and sends fake x-ray data.
 
-## 🛠️ Setup Instructions
+## Setup Instructions
 ### 1️⃣ Clone the Repository
 ```sh
 git clone https://github.com/Yasin1ar/IoT-DMS-RabbitMQ-NestJs
