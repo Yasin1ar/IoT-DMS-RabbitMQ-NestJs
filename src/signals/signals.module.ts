@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SignalsService } from './signals.service';
+import { SignalService } from './signals.service';
+import { SignalsController } from './signals.controller';
 import { XraySchema } from './schemas/x-ray.schema';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: 'XRay', schema: XraySchema }]),
-  ],
-  providers: [SignalsService],
-  exports: [SignalsService],
+  imports: [MongooseModule.forFeature([{ name: 'Xray', schema: XraySchema }])],
+  controllers: [SignalsController],
+  providers: [SignalService],
+  exports: [SignalService],
 })
 export class SignalsModule {}

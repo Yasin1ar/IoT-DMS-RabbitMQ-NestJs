@@ -1,10 +1,14 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as amqp from 'amqplib';
+import { SignalService } from '../signals/signals.service';
 
 @Injectable()
-export class RabbitMQService implements OnModuleInit {
+export class RabbitMQService {
   private connection: amqp.Connection;
   private channel: amqp.Channel;
+  private readonly logger = new Logger(RabbitMQService.name); // ✅ Define Logger here
+
+  constructor(private readonly signalsService: SignalService) {}
 
   async onModuleInit() {
     await this.connect();
@@ -22,12 +26,23 @@ export class RabbitMQService implements OnModuleInit {
   }
 
   private async consumeMessages(queueName: string) {
-    this.channel.consume(queueName, (message) => {
+    this.channel.consume(queueName, async (message) => {
       if (message) {
-        const content = message.content.toString();
-        console.log('Received message:', content);
-        // TODO: Process the x-ray data
-        this.channel.ack(message);
+        try {
+          const content = JSON.parse(message.content.toString());
+          const deviceId = Object.keys(content)[0];
+          const data = content[deviceId]?.data;
+
+          if (!data) {
+            throw new Error('Invalid x-ray data structure');
+          }
+
+          await this.signalsService.processAndSaveXrayData(deviceId, data);
+          this.channel.ack(message);
+        } catch (error) {
+          this.logger.error(`Error processing x-ray data: ${error.message}`); // ✅ Now properly defined
+          this.channel.ack(message); // Prevent infinite loop by acknowledging invalid messages
+        }
       }
     });
   }

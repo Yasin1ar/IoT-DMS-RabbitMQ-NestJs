@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
+import { SignalsModule } from './signals/signals.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
       inject: [ConfigService],
     }),
     RabbitMQModule,
+    SignalsModule,
   ],
 })
 export class AppModule {}

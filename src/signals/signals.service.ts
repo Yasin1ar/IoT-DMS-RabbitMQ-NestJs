@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Xray } from './schemas/x-ray.schema';
 
 @Injectable()
-export class SignalsService {
+export class SignalService {
   constructor(@InjectModel('Xray') private xrayModel: Model<Xray>) {}
 
-  async processAndSaveXrayData(deviceId: string, data: any[]): Promise<void> {
+  async processAndSaveXrayData(deviceId: string, data: any[]): Promise<Xray> {
+    if (!Array.isArray(data)) {
+      throw new BadRequestException('Invalid x-ray data format');
+    }
+
     const dataLength = data.length;
     const dataVolume = data.reduce((sum, entry) => sum + entry[1][2], 0);
 
@@ -17,6 +21,26 @@ export class SignalsService {
       dataLength,
       dataVolume,
     });
-    await xrayDocument.save();
+
+    return xrayDocument.save();
+  }
+
+  async getAllXrays(): Promise<Xray[]> {
+    return this.xrayModel.find().exec();
+  }
+
+  async getXrayByDeviceId(deviceId: string): Promise<Xray> {
+    const xray = await this.xrayModel.findOne({ deviceId }).exec();
+    if (!xray) {
+      throw new NotFoundException(`X-ray record with deviceId ${deviceId} not found`);
+    }
+    return xray;
+  }
+
+  async deleteXray(deviceId: string): Promise<void> {
+    const result = await this.xrayModel.deleteOne({ deviceId }).exec();
+    if (result.deletedCount === 0) {
+      throw new NotFoundException(`X-ray record with deviceId ${deviceId} not found`);
+    }
   }
 }
