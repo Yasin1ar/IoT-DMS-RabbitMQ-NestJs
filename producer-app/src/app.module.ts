@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ProducerModule } from './producer/producer.module';
+import { ProducerModule } from './producer/rabbitmq.producer.module';
 
 @Module({
   imports: [ProducerModule],
