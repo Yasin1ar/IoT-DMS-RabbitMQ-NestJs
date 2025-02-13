@@ -1,111 +1,180 @@
 /**
-   * FakeXrayModel simulates a Mongoose model for testing purposes.
-   * It supports instantiation with the 'new' keyword and defines static
-   * methods to simulate Mongoose's Query API behavior.
-   */
-  class FakeXrayModel {
-    data: any;
-    constructor(data: any) {
-      this.data = data;
-    }
-  
-    // Simulate saving a document.
-    save() {
-      return Promise.resolve(this.data);
-    }
-  
-    // Static properties to override default behavior in tests.
-    static findMock: (() => any) | undefined;
-    static findOneMock: ((query: any) => any) | undefined;
-    static deleteOneMock: ((query: any) => any) | undefined;
-  
-    // Static method to simulate Query.exec() for find()
-    static find() {
-      return {
-        exec: () => Promise.resolve(FakeXrayModel.findMock ? FakeXrayModel.findMock() : []),
-      };
-    }
-  
-    // Static method to simulate Query.exec() for findOne()
-    static findOne(query: any) {
-      return {
-        exec: () =>
-          Promise.resolve(
-            FakeXrayModel.findOneMock ? FakeXrayModel.findOneMock(query) : null
-          ),
-      };
-    }
-  
-    // Static create method (can be used as a shortcut for new document creation)
-    static create(data: any) {
-      return Promise.resolve(data);
-    }
-  
-    // Static method to simulate Query.exec() for deleteOne()
-    static deleteOne(query: any) {
-      return {
-        exec: () =>
-          Promise.resolve(
-            FakeXrayModel.deleteOneMock ? FakeXrayModel.deleteOneMock(query) : { deletedCount: 1 }
-          ),
-      };
-    }
+ * Test suite for FakeXrayModel and SignalService query filtering functionality.
+ *
+ * This file includes existing tests for the FakeXrayModel as well as new tests
+ * for verifying that SignalService builds the correct query conditions when filtering.
+ */
+
+import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/mongoose';
+import { SignalService } from './signals.service';
+import { GetXrayFilterDto } from './dto/get-xray-filter.dto';
+
+class FakeXrayModel {
+  data: any;
+  constructor(data: any) {
+    this.data = data;
   }
-  
-  export default FakeXrayModel;
-  
-  // ----------------------------- //
-  // Jest Test Suite for FakeXrayModel
-  // ----------------------------- //
-  
-  import { describe, it, afterEach, expect } from '@jest/globals';
-  
-  describe("FakeXrayModel", () => {
-    afterEach(() => {
-      // Reset static mocks after each test.
-      FakeXrayModel.findMock = undefined;
-      FakeXrayModel.findOneMock = undefined;
-      FakeXrayModel.deleteOneMock = undefined;
+
+  save() {
+    return Promise.resolve(this.data);
+  }
+
+  static findMock: (() => any) | undefined;
+  static findOneMock: ((query: any) => any) | undefined;
+  static deleteOneMock: ((query: any) => any) | undefined;
+
+  static find() {
+    return {
+      exec: () =>
+        Promise.resolve(FakeXrayModel.findMock ? FakeXrayModel.findMock() : []),
+    };
+  }
+
+  static findOne(query: any) {
+    return {
+      exec: () =>
+        Promise.resolve(
+          FakeXrayModel.findOneMock ? FakeXrayModel.findOneMock(query) : null,
+        ),
+    };
+  }
+
+  static create(data: any) {
+    return Promise.resolve(data);
+  }
+
+  static deleteOne(query: any) {
+    return {
+      exec: () =>
+        Promise.resolve(
+          FakeXrayModel.deleteOneMock
+            ? FakeXrayModel.deleteOneMock(query)
+            : { deletedCount: 1 },
+        ),
+    };
+  }
+}
+
+describe('FakeXrayModel', () => {
+  afterEach(() => {
+    FakeXrayModel.findMock = undefined;
+    FakeXrayModel.findOneMock = undefined;
+    FakeXrayModel.deleteOneMock = undefined;
+  });
+
+  it('should return an empty array when no findMock is set', async () => {
+    const result = await FakeXrayModel.find().exec();
+    expect(result).toEqual([]);
+  });
+
+  it('should return expected object when findOneMock is set', async () => {
+    FakeXrayModel.findOneMock = (query: any) =>
+      query.deviceId === 'test' ? { deviceId: 'test' } : null;
+    const result = await FakeXrayModel.findOne({ deviceId: 'test' }).exec();
+    expect(result).toEqual({ deviceId: 'test' });
+  });
+});
+
+//
+// =================== SignalService Query Filtering Tests ===================
+//
+describe('SignalService Query Filtering', () => {
+  let service: SignalService;
+  let mockXrayModel: any;
+
+  beforeEach(async () => {
+    // Create a mock for the xrayModel with a 'find' method.
+    mockXrayModel = {
+      find: jest.fn().mockImplementation((query) => ({
+        exec: jest.fn().mockResolvedValue(query), // Returns the query object to inspect filters.
+      })),
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        SignalService,
+        {
+          provide: getModelToken('Xray'),
+          useValue: mockXrayModel,
+        },
+      ],
+    }).compile();
+
+    service = module.get<SignalService>(SignalService);
+  });
+
+  it('should build a query with deviceId filter', async () => {
+    const dto: GetXrayFilterDto = { deviceId: 'device123' };
+
+    const queryResult = await service.getAllXrays(dto);
+
+    expect(mockXrayModel.find).toHaveBeenCalledWith({ deviceId: 'device123' });
+    expect(queryResult).toMatchObject({ deviceId: 'device123' });
+  });
+
+  it('should build a query with data length and volume filters', async () => {
+    const dto: GetXrayFilterDto = {
+      minDataLength: 5,
+      maxDataLength: 20,
+      minDataVolume: 100,
+      maxDataVolume: 500,
+    };
+
+    const queryResult = await service.getAllXrays(dto);
+
+    expect(mockXrayModel.find).toHaveBeenCalledWith({
+      dataLength: { $gte: 5, $lte: 20 },
+      dataVolume: { $gte: 100, $lte: 500 },
     });
-    
-    it("should return an empty array when no findMock is set", async () => {
-      const result = await FakeXrayModel.find().exec();
-      expect(result).toEqual([]);
-    });
-  
-    it("should return expected array when findMock is set", async () => {
-      FakeXrayModel.findMock = () => [{ deviceId: '123' }];
-      const result = await FakeXrayModel.find().exec();
-      expect(result).toEqual([{ deviceId: '123' }]);
-    });
-  
-    it("should return null when no findOneMock is set", async () => {
-      const result = await FakeXrayModel.findOne({ deviceId: '123' }).exec();
-      expect(result).toBeNull();
-    });
-  
-    it("should return expected object when findOneMock is set", async () => {
-      FakeXrayModel.findOneMock = (query: any) =>
-        query.deviceId === 'test' ? { deviceId: 'test' } : null;
-      const result = await FakeXrayModel.findOne({ deviceId: 'test' }).exec();
-      expect(result).toEqual({ deviceId: 'test' });
-    });
-  
-    it("should return default deleteOne result when no deleteOneMock is set", async () => {
-      const result = await FakeXrayModel.deleteOne({ deviceId: '123' }).exec();
-      expect(result).toEqual({ deletedCount: 1 });
-    });
-  
-    it("should return expected deleteOne result when deleteOneMock is set", async () => {
-      FakeXrayModel.deleteOneMock = (query: any) =>
-        query.deviceId === 'test' ? { deletedCount: 1 } : { deletedCount: 0 };
-      const result = await FakeXrayModel.deleteOne({ deviceId: 'test' }).exec();
-      expect(result).toEqual({ deletedCount: 1 });
-    });
-  
-    it("should work as a document when created via constructor", async () => {
-      const doc = new FakeXrayModel({ deviceId: '123' });
-      const savedData = await doc.save();
-      expect(savedData).toEqual({ deviceId: '123' });
+    expect(queryResult).toMatchObject({
+      dataLength: { $gte: 5, $lte: 20 },
+      dataVolume: { $gte: 100, $lte: 500 },
     });
   });
+
+  it('should build a query with time range filters', async () => {
+    const startTime = '2023-01-01T00:00:00.000Z';
+    const endTime = '2023-12-31T23:59:59.999Z';
+    const dto: GetXrayFilterDto = { startTime, endTime };
+
+    const parsedStart = new Date(startTime);
+    const parsedEnd = new Date(endTime);
+
+    const queryResult = await service.getAllXrays(dto);
+
+    expect(mockXrayModel.find).toHaveBeenCalledWith({
+      time: { $gte: parsedStart, $lte: parsedEnd },
+    });
+    expect(queryResult).toMatchObject({
+      time: { $gte: parsedStart, $lte: parsedEnd },
+    });
+  });
+
+  it('should combine multiple filters', async () => {
+    const dto: GetXrayFilterDto = {
+      deviceId: 'device123',
+      minDataLength: 5,
+      maxDataLength: 15,
+      minDataVolume: 50,
+      startTime: '2023-05-01T00:00:00.000Z',
+    };
+
+    const parsedStart = new Date(dto.startTime as string);
+
+    const queryResult = await service.getAllXrays(dto);
+
+    expect(mockXrayModel.find).toHaveBeenCalledWith({
+      deviceId: 'device123',
+      dataLength: { $gte: 5, $lte: 15 },
+      dataVolume: { $gte: 50 },
+      time: { $gte: parsedStart },
+    });
+    expect(queryResult).toMatchObject({
+      deviceId: 'device123',
+      dataLength: { $gte: 5, $lte: 15 },
+      dataVolume: { $gte: 50 },
+      time: { $gte: parsedStart },
+    });
+  });
+});

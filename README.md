@@ -9,7 +9,7 @@ The **IoT X-ray Data Management System** is a robust, scalable, and efficient so
 ## Key Features
 - **Real-time Data Processing**: Utilizes **RabbitMQ** to handle and process real-time x-ray signals from IoT devices.
 - **Scalable Data Storage**: Employs **MongoDB** with **Mongoose** for efficient and scalable data storage.
-- **RESTful API**: Offers a well-documented RESTful API for easy integration with external systems.
+- **RESTful API**: Offers a well-documented RESTful API for easy integration with external systems. also **query parameters for filtering supported.**
 - **Swagger Documentation**: Includes interactive API documentation for developers.
 - **IoT Simulator**: Comes with a built-in **IoT Simulator** that generates and sends mock x-ray data for testing and development purposes.
 
@@ -84,3 +84,26 @@ Store in MongoDB           Send to RabbitMQ Queue
     ⬇️                               ⬇️
 Provide RESTful API        Run as a Microservice
 ```
+# Signals API Endpoints
+
+This section describes the endpoints provided by the SignalsController and offers sample requests for each endpoint.
+
+## Endpoints Overview
+
+### 1. Retrieve All Xray Records (with Filtering)
+
+**Endpoint:**  
+`GET /signals`
+
+**Description:**  
+Returns an array of x-ray records. Supports optional filtering via query parameters:
+
+- `deviceId`: Filter records for a specific device.
+- `minDataLength` & `maxDataLength`: Filter by the size of the x-ray data.
+- `minDataVolume` & `maxDataVolume`: Filter by the overall data volume.
+- `startTime` & `endTime`: Filter records within a specific time range (ISO date strings).
+
+**Example Request:**  
+Using cURL:
+```bash
+curl -X GET "http://localhost:3000/signals?deviceId=device123&minDataLength=5&maxDataLength=20&startTime=2023-01-01T00:00:00.000Z&endTime=2023-12-31T23:59:59.999Z"
