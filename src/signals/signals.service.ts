@@ -1,3 +1,11 @@
+/**
+ * Provides services for processing and managing X-ray data.
+ *
+ * This service validates, processes, and persists X-ray data received from various devices. 
+ * It offers methods to save new X-ray records, retrieve all records, retrieve a record by device ID, 
+ * and delete a record by device ID. In case of invalid data formats or missing records, 
+ * appropriate exceptions are thrown.
+ */
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';

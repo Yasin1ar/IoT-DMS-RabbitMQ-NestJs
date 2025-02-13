@@ -18,4 +18,4 @@ exports.ProducerModule = ProducerModule = __decorate([
         providers: [rabbitmq_producer_service_1.RabbitMQProducerService, iot_simulator_service_1.IotSimulatorService],
     })
 ], ProducerModule);
-//# sourceMappingURL=producer.module.js.map
+//# sourceMappingURL=rabbitmq.producer.module.js.map

@@ -1,3 +1,9 @@
+/**
+ * Service that simulates IoT device data and periodically sends generated x-ray data to the messaging queue.
+ * 
+ * On module initialization, it starts a recurring simulation that generates a random device ID and x-ray data,
+ * and then dispatches the data using the dedicated messaging service.
+ */
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { RabbitMQProducerService } from './rabbitmq.producer.service';
 

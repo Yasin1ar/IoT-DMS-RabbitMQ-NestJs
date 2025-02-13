@@ -1,3 +1,9 @@
+/**
+ * Test suite for the SignalsController.
+ *
+ * Validates that the controller correctly delegates calls to the SignalService and
+ * returns the expected results for methods such as getAllXrays.
+ */
 import { Test, TestingModule } from '@nestjs/testing';
 import { SignalsController } from './signals.controller';
 import { SignalService } from './signals.service';

@@ -1,3 +1,7 @@
+/**
+ * Initializes the Nest application, configures API documentation using DocumentBuilder and SwaggerModule,
+ * and starts the server on port 3000.
+ */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';

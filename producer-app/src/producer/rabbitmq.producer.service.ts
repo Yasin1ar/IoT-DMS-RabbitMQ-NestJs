@@ -1,3 +1,8 @@
+/**
+ * RabbitMQProducerService initializes a RabbitMQ connection, asserts a durable queue,
+ * and provides a method to send x-ray data messages for a specified device. 
+ * It implements OnModuleInit to automatically connect upon module initialization.
+ */
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import * as amqp from 'amqplib';
 

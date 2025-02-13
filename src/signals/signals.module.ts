@@ -1,3 +1,10 @@
+/**
+ * Module for managing X-ray signals.
+ *
+ * Registers the X-ray schema with the database, configures the controller for HTTP requests,
+ * and provides the service responsible for processing and business logic related to X-ray data.
+ * Exports the service for consumption in other parts of the application.
+ */
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SignalService } from './signals.service';

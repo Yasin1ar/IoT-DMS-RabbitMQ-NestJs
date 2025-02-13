@@ -1,3 +1,10 @@
+/**
+ * Test suite for RabbitMQProducerService.
+ *
+ * This suite verifies that the sendXrayData method correctly publishes x-ray data to RabbitMQ.
+ * It sets up a testing module with the service provider, mocks the method to avoid real connections,
+ * and confirms that the method gets called as expected.
+ */
 import { Test, TestingModule } from '@nestjs/testing';
 import { RabbitMQProducerService } from './rabbitmq.producer.service';
 

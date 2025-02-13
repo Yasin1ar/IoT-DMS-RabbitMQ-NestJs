@@ -1,3 +1,7 @@
+/**
+ * `RabbitMQService` handles connection to RabbitMQ, queue creation,
+ * and consumption of messages for processing x-ray data.
+ */
 import { Injectable, Logger } from '@nestjs/common';
 import * as amqp from 'amqplib';
 import { SignalService } from '../signals/signals.service';
@@ -40,7 +44,7 @@ export class RabbitMQService {
           await this.signalsService.processAndSaveXrayData(deviceId, data);
           this.channel.ack(message);
         } catch (error) {
-          this.logger.error(`Error processing x-ray data: ${error.message}`); // ✅ Now properly defined
+          this.logger.error(`Error processing x-ray data: ${error.message}`);
           this.channel.ack(message); // Prevent infinite loop by acknowledging invalid messages
         }
       }
