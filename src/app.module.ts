@@ -20,7 +20,7 @@ import { SignalsModule } from './signals/signals.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: `mongodb://${configService.get('MONGO_USER')}:${configService.get('MONGO_PASSWORD')}@localhost:27017`,
-        dbName: 'iot-data',
+        dbName: 'signals',
       }),
       inject: [ConfigService],
     }),
