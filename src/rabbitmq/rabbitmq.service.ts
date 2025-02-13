@@ -10,7 +10,7 @@ import { SignalService } from '../signals/signals.service';
 export class RabbitMQService {
   private connection: amqp.Connection;
   private channel: amqp.Channel;
-  private readonly logger = new Logger(RabbitMQService.name); // ✅ Define Logger here
+  private readonly logger = new Logger(RabbitMQService.name); 
 
   constructor(private readonly signalsService: SignalService) {}
 
