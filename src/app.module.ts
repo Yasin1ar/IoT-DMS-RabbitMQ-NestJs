@@ -10,8 +10,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
+import { RabbitMQModule } from './rabbitmq/rabbitmq.consumer.module';
 import { SignalsModule } from './signals/signals.module';
+import { ProducerModule } from './producer/rabbitmq.producer.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SignalsModule } from './signals/signals.module';
     }),
     RabbitMQModule,
     SignalsModule,
+    ProducerModule
   ],
 })
 export class AppModule {}
