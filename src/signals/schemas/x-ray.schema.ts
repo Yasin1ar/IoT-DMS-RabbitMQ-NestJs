@@ -14,9 +14,16 @@ export interface Xray extends Document {
   dataVolume: number;
 }
 
-export const XraySchema = new Schema<Xray>({
-  deviceId: { type: String, required: true },
-  time: { type: Date, required: true },
-  dataLength: { type: Number, required: true },
-  dataVolume: { type: Number, required: true },
-});
+export const XraySchema = new Schema<Xray>(
+  {
+    deviceId: { type: String, required: true },
+    time: { type: Date, required: true },
+    dataLength: { type: Number, required: true },
+    dataVolume: { type: Number, required: true },
+  },
+  { timestamps: true },
+);
+
+XraySchema.index({ deviceId: 1 });
+XraySchema.index({ time: 1 });
+XraySchema.index({ deviceId: 1, time: 1 });
