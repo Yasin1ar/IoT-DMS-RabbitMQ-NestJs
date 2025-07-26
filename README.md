@@ -20,7 +20,7 @@ A real-time IoT data management system built with NestJS, RabbitMQ, and MongoDB 
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Yasin1ar/IoT-DMS-RabbitMQ-NestJs.git
    cd IoT-DMS-RabbitMQ-NestJs
    ```
 
