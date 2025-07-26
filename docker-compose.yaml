@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"  # RabbitMQ port
+      - "15672:15672" # RabbitMQ management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    networks:
+      - iot-network
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017" # MongoDB port
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - iot-network
+
+  api:
+    build: .
+    depends_on:
+      - rabbitmq
+      - mongodb
+    environment:
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_DATABASE: mongodb
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    ports:
+      - "3000:3000"
+    networks:
+      - iot-network
+    restart: unless-stopped
+
+volumes:
+  mongodb-data:
+
+networks:
+  iot-network:
+    driver: bridge
