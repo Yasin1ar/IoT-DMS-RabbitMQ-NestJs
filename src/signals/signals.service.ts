@@ -24,7 +24,7 @@ export class SignalService {
     const dataLength = data.length;
     const dataVolume = data.reduce((sum, entry) => sum + entry.values[2], 0);
 
-    const xrayDocument = new this.xrayModel({
+    const xrayDocument = new this.xrayModel({       
       deviceId,
       time: new Date(),
       dataLength,
