@@ -30,8 +30,8 @@ export class RabbitMQConnectionHelper implements OnModuleInit, OnModuleDestroy {
   }
 
   private setupConfig() {
-    const host = this.configService.get('RABBITMQ_HOST');
-    const port = this.configService.get('RABBITMQ_PORT');
+    const host = this.configService.get('UNDER_DEV') === 'true' ? 'localhost' : 'rabbitmq';
+    const port = '5672';
     const user = this.configService.get('RABBITMQ_USER');
     const password = this.configService.get('RABBITMQ_PASSWORD');
     this.rabbitmqUrl = `amqp://${user}:${password}@${host}:${port}`;

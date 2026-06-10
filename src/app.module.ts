@@ -12,7 +12,9 @@ import { CommonModule } from './common/common.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: `mongodb://${configService.get('MONGO_USER')}:${configService.get('MONGO_PASSWORD')}@mongodb:27017`,
+        uri: `mongodb://${configService.get('MONGO_USER')}:${configService.get('MONGO_PASSWORD')}@${configService.get('UNDER_DEV') === 'true'
+          ? 'localhost'
+          : 'mongodb'}:27017`,
         dbName: configService.get('MONGO_DATABASE'),
       }),
       inject: [ConfigService],
@@ -26,4 +28,4 @@ import { CommonModule } from './common/common.module';
   providers: [],
   exports: [],
 })
-export class AppModule {}
+export class AppModule { }
