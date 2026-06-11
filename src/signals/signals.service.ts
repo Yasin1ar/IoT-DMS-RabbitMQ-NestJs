@@ -2,16 +2,21 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Xray } from './schemas/x-ray.schema';
 import { GetXrayDto } from './dto/get-xray-filter.dto';
 import { XrayDataEntry } from '../producer/iot.simulator.service';
+import { SignalsGateway } from '../realtime/signals.gateway';
 
 @Injectable()
 export class SignalService {
-  constructor(@InjectModel('Xray') private xrayModel: Model<Xray>) {}
+  constructor(
+    @InjectModel('Xray') private xrayModel: Model<Xray>,
+    @Optional() private readonly signalsGateway?: SignalsGateway,
+  ) {}
 
   async processAndSaveXrayData(
     deviceId: string,
@@ -31,7 +36,9 @@ export class SignalService {
       dataVolume,
     });
 
-    return xrayDocument.save();
+    const saved = await xrayDocument.save();
+    this.signalsGateway?.broadcastSignalCreated(saved);
+    return saved;
   }
 
   async getAllXrays(
@@ -96,7 +103,12 @@ export class SignalService {
 
     const skip = (page - 1) * limit;
     const [data, total] = await Promise.all([
-      this.xrayModel.find(query).skip(skip).limit(limit).exec(),
+      this.xrayModel
+        .find(query)
+        .sort({ time: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
       this.xrayModel.countDocuments(query).exec(),
     ]);
     return { data, total };

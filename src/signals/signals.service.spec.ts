@@ -58,8 +58,10 @@ describe('SignalService', () => {
   describe('getAllXrays', () => {
     it('should return data and total', async () => {
       xrayModel.find.mockReturnValue({
-        skip: () => ({
-          limit: () => ({ exec: jest.fn().mockResolvedValue([1, 2]) }),
+        sort: () => ({
+          skip: () => ({
+            limit: () => ({ exec: jest.fn().mockResolvedValue([1, 2]) }),
+          }),
         }),
       });
       xrayModel.countDocuments.mockReturnValue({
