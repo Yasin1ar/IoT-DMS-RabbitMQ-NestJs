@@ -10,6 +10,7 @@ A real-time IoT data management system built with NestJS, RabbitMQ, and MongoDB 
 - **IoT Simulator**: Built-in simulator for testing with mock device data
 - **Docker Support**: Complete containerized setup with Docker Compose
 - **MongoDB Integration**: Persistent storage with optimized indexing
+- **Dashboard**: Simple, elegant UI.
 
 ## 📋 Prerequisites
 
@@ -30,16 +31,9 @@ A real-time IoT data management system built with NestJS, RabbitMQ, and MongoDB 
    ```
 
 3. **Set up environment variables**
-   Create a `.env` file in the root directory:
-   ```env
-   MONGO_USER=your_mongo_user
-   MONGO_PASSWORD=your_mongo_password
-   MONGO_DATABASE=mongodb
-   RABBITMQ_USER=your_rabbitmq_user
-   RABBITMQ_PASSWORD=your_rabbitmq_password
-   RABBITMQ_HOST=rabbitmq
-   RABBITMQ_PORT=5672
-   ```
+   Create a `.env` file in the root directory.
+   Should be something like `.env.example`.
+   Or If you are lazy, just remove the `.example` postfix and it will work.
 
 ## 🚀 Quick Start
 
@@ -72,6 +66,13 @@ docker-compose up -d
 Once the application is running, access the Swagger documentation at:
 ```
 http://localhost:3000/api/docs
+```
+
+## UI
+
+Once the application is running, access the Dashboard at:
+```
+http://localhost:3000/
 ```
 
 ## 🐳 Docker
