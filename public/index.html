@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>IoT X-ray Dashboard | Dark/Light & Clean Footer</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='3' width='20' height='14' rx='2' ry='2'></rect><line x1='8' y1='21' x2='16' y2='21'></line><line x1='12' y1='17' x2='12' y2='21'></line></svg>" />
+</head>
+
+<body>
+
+  <div class="dashboard-container">
+    <header class="header">
+      <div>
+        <h1>📡 IoT X-ray Dashboard</h1>
+        <p class="subtitle">Live signal feed from RabbitMQ consumers — realtime insights</p>
+      </div>
+      <div class="header-actions">
+        <span id="connection-status" class="status-badge disconnected">Disconnected</span>
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Dark/Light mode">
+          <span class="toggle-icon">🌙</span>
+          <span class="toggle-text">Dark</span>
+        </button>
+        <a class="link-button" href="/api/docs" target="_blank">📘 API Docs</a>
+      </div>
+    </header>
+
+    <section class="stats">
+      <div class="stat-card">
+        <span class="stat-label">📦 Total records (DB)</span>
+        <span id="total-count" class="stat-value">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">🔄 Rows shown (live table)</span>
+        <span id="row-count" class="stat-value">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">⏱️ Last update</span>
+        <span id="last-update" class="stat-value">—</span>
+      </div>
+    </section>
+
+    <section class="table-section">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Device ID</th>
+              <th>Timestamp</th>
+              <th>Data length</th>
+              <th>Data volume (Kb)</th>
+            </tr>
+          </thead>
+          <tbody id="signals-body">
+            <tr id="empty-row">
+              <td colspan="4" class="empty-message">⏳ Waiting for signals via RabbitMQ…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="dashboard-footer">
+      <div class="footer-content">
+        <div class="footer-left">
+          <span>⚡ IoT X‑ray · Real‑time analytics</span>
+          <span class="footer-divider">|</span>
+          <span>🐇 RabbitMQ consumer feed</span>
+        </div>
+        <div class="footer-right">
+          <a href="https://github.com/Yasin1ar/IoT-DMS-RabbitMQ-NestJs" target="_blank" rel="noopener noreferrer"
+            class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+              </path>
+            </svg>
+            GitHub repo
+          </a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>🐍 Live signal feed | Data refreshes via WebSocket</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

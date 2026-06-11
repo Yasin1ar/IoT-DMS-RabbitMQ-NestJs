@@ -1,13 +1,21 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { RabbitMQModule } from './rabbitmq/rabbitmq.consumer.module';
 import { SignalsModule } from './signals/signals.module';
 import { ProducerModule } from './producer/rabbitmq.producer.module';
 import { CommonModule } from './common/common.module';
+import { RealtimeModule } from './realtime/realtime.module';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/',
+      exclude: ['/api*', '/signals*'],
+    }),
     ConfigModule.forRoot(),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -23,6 +31,7 @@ import { CommonModule } from './common/common.module';
     SignalsModule,
     ProducerModule,
     CommonModule,
+    RealtimeModule,
   ],
   controllers: [],
   providers: [],
